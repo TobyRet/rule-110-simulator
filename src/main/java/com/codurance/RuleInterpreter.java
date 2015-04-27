@@ -7,7 +7,8 @@ import java.util.List;
 public class RuleInterpreter {
 
     private Console console;
-    private final HashMap<String, String> lookUp = new HashMap<String, String>();
+    private final HashMap<String, String> lookUp = new HashMap<>();
+    private String inputToProcess;
 
     public RuleInterpreter(Console console) {
         this.console = console;
@@ -16,41 +17,51 @@ public class RuleInterpreter {
 
 
     public void assess(String input) {
-        List<Character> characterArray = new ArrayList();
 
-        characterArray.add('0');
-        for (char c : input.toCharArray()) {
-            characterArray.add(c);
+        inputToProcess = input;
+
+        for(int i=0; i < 10; i++) {
+
+
+            List<String> characterArray = new ArrayList();
+
+            characterArray.add("-");
+            for (String c : inputToProcess.split("")) {
+                characterArray.add(c);
+            }
+            characterArray.add("-");
+
+            String output = "";
+
+            while(characterArray.size() > 2) {
+                String groupOfThree = String.valueOf(characterArray.get(characterArray.size() - 3))
+                        + String.valueOf(characterArray.get(characterArray.size() - 2))
+                        + String.valueOf(characterArray.get(characterArray.size() - 1));
+
+                output += lookUp.get(groupOfThree);
+
+                characterArray.remove(characterArray.size() - 1);
+            }
+
+            String formattedOutput = new StringBuilder(output).reverse().toString();
+
+            System.out.println(formattedOutput);
+
+            console.print(formattedOutput);
+
+            inputToProcess = formattedOutput;
         }
-        characterArray.add('0');
 
-        String output = "";
-
-        while(characterArray.size() > 2) {
-            String groupOfThree = String.valueOf(characterArray.get(characterArray.size() - 3))
-                                    + String.valueOf(characterArray.get(characterArray.size() - 2))
-                                    + String.valueOf(characterArray.get(characterArray.size() - 1));
-
-            output += lookUp.get(groupOfThree);
-
-            characterArray.remove(characterArray.size() - 1);
-        }
-
-        System.out.println("unformatted: " + output);
-        String formattedOutput = new StringBuilder(output).reverse().toString();
-        System.out.println("formated: " + formattedOutput);
-
-        console.print(formattedOutput);
     }
 
     private void populateLookup() {
-        lookUp.put("111", "-");
-        lookUp.put("110", "*");
-        lookUp.put("101", "*");
-        lookUp.put("100", "-");
-        lookUp.put("011", "*");
-        lookUp.put("010", "*");
-        lookUp.put("001", "*");
-        lookUp.put("000", "-");
+        lookUp.put("***", "*");
+        lookUp.put("**-", "*");
+        lookUp.put("*-*", "*");
+        lookUp.put("*--", "-");
+        lookUp.put("-**", "*");
+        lookUp.put("-*-", "*");
+        lookUp.put("--*", "*");
+        lookUp.put("---", "-");
     }
 }
