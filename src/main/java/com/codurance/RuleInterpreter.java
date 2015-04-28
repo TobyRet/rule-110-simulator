@@ -4,11 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 public class RuleInterpreter {
 
+    private static final String EXTRA_0 = "-";
     private Console console;
     private final HashMap<String, String> lookUp = new HashMap<>();
-    private String inputToProcess;
+    private List<String> inputAsList = new ArrayList<>();
+    private String lineOutput = "";
+    private String lineToPrint;
+    private String inputToParse;
 
     public RuleInterpreter(Console console) {
         this.console = console;
@@ -17,41 +23,50 @@ public class RuleInterpreter {
 
 
     public void assess(String input) {
+        inputToParse = input;
 
-        inputToProcess = input;
+        for(int i = 0; i < input.length(); i++ ) {
+            prepareInput(inputToParse);
+            parseInput();
+            console.print(lineToPrint);
+            reset();
+        }
+    }
 
-        for(int i=0; i < 10; i++) {
+    private void reset() {
+        inputToParse = lineToPrint;
+        lineOutput = "";
+    }
 
+    private void parseInput() {
+        while(inputAsList.size() > 2) {
+            String groupOfThreeFormatted = get3ValuesFromInput(inputAsList);
+            lineOutput += lookUp.get(groupOfThreeFormatted);
+            lineToPrint = new StringBuilder(lineOutput).reverse().toString();
+            inputAsList.remove(inputAsList.size() - 1);
+        }
+    }
 
-            List<String> characterArray = new ArrayList();
+    private String get3ValuesFromInput(List<String> inputAsList) {
+        String lastIndexValue = inputAsList.get(inputAsList.size() - 1);
+        String secondToLastIndexValue = inputAsList.get(inputAsList.size() - 2);
+        String thirdToIndexValue = inputAsList.get(inputAsList.size() - 3);
 
-            characterArray.add("-");
-            for (String c : inputToProcess.split("")) {
-                characterArray.add(c);
-            }
-            characterArray.add("-");
+        List<String> groupOfThreeList = asList(thirdToIndexValue, secondToLastIndexValue, lastIndexValue);
 
-            String output = "";
+        String groupOfThree = "";
 
-            while(characterArray.size() > 2) {
-                String groupOfThree = String.valueOf(characterArray.get(characterArray.size() - 3))
-                        + String.valueOf(characterArray.get(characterArray.size() - 2))
-                        + String.valueOf(characterArray.get(characterArray.size() - 1));
-
-                output += lookUp.get(groupOfThree);
-
-                characterArray.remove(characterArray.size() - 1);
-            }
-
-            String formattedOutput = new StringBuilder(output).reverse().toString();
-
-            System.out.println(formattedOutput);
-
-            console.print(formattedOutput);
-
-            inputToProcess = formattedOutput;
+        for(String value : groupOfThreeList) {
+            groupOfThree += value;
         }
 
+        return groupOfThree;
+    }
+
+    private void prepareInput(String input) {
+        inputAsList = new ArrayList<>(asList(input.split("")));
+        inputAsList.add(EXTRA_0);
+        inputAsList.add(0, EXTRA_0);
     }
 
     private void populateLookup() {
