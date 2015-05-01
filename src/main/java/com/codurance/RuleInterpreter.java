@@ -21,11 +21,10 @@ public class RuleInterpreter {
         populateLookup();
     }
 
-
     public void assess(String input) {
         inputToParse = input;
 
-        for(int i = 0; i < input.length(); i++ ) {
+        for(int i = 0; i < input.length() - 2; i++ ) {
             prepareInput(inputToParse);
             parseInput();
             console.print(lineToPrint);
@@ -52,7 +51,9 @@ public class RuleInterpreter {
         String secondToLastIndexValue = inputAsList.get(inputAsList.size() - 2);
         String thirdToIndexValue = inputAsList.get(inputAsList.size() - 3);
 
-        List<String> groupOfThreeList = asList(thirdToIndexValue, secondToLastIndexValue, lastIndexValue);
+        List<String> groupOfThreeList = asList(thirdToIndexValue,
+                                                secondToLastIndexValue,
+                                                lastIndexValue);
 
         String groupOfThree = "";
 
@@ -70,7 +71,7 @@ public class RuleInterpreter {
     }
 
     private void populateLookup() {
-        lookUp.put("***", "*");
+        lookUp.put("***", "-");
         lookUp.put("**-", "*");
         lookUp.put("*-*", "*");
         lookUp.put("*--", "-");
